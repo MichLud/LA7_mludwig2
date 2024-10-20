@@ -1,0 +1,34 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: '3.8'
+
+services:
+  productsservice:
+    image: ${DOCKER_REGISTRY-}productsservice
+    build:
+      context: ./ProductsService
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"  # Maps port 5000 on the host to port 5000 in the container
+      - "5001:5001"  # Port for debugging
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000  # Enables HTTP and allows access on port 5000
+    volumes:
+      - ./ProductsService:/app  # Mounts the source code for hot-reloading and debugging
+      - ~/.vsdbg:/root/.vsdbg:rw  # Mounts the Visual Studio debugger
+
+  ordersservice:
+    image: ${DOCKER_REGISTRY-}ordersservice
+    build:
+      context: ./OrdersService
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5000"  # Maps port 5002 on the host to port 5000 in the container
+      - "5003:5001"  # Port for debugging
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000  # Enables HTTP and allows access on port 5000
+    volumes:
+      - ./OrdersService:/app  # Mounts the source code for hot-reloading and debugging
+      - ~/.vsdbg:/root/.vsdbg:rw  # Mounts the Visual Studio debugger
